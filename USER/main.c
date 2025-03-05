@@ -186,8 +186,8 @@ int main(void)
 	if (out_mode == 1)
 		usart3_init(400000); // CRSF输出
 
-	TIM3_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器10ms中断
-	TIM1_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器1ms中断
+	TIM3_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器3 10ms中断
+	TIM1_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器1 01ms中断
 
 	TIM_Cmd(TIM3, (FunctionalState)1); // 打开任务定时器
 	TIM_Cmd(TIM1, (FunctionalState)1); // 打开任务定时器
