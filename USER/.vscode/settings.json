@@ -7,6 +7,22 @@
         "xuan.h": "c",
         "usart.h": "c",
         "sys.h": "c",
-        "delay.h": "c"
+        "delay.h": "c",
+        "sbus.h": "c",
+        "stm32f10x.h": "c",
+        "system_stm32f10x.h": "c",
+        "ctrl.h": "c",
+        "usb_hw.h": "c",
+        "ips.h": "c",
+        "open_tel_mavlink.h": "c",
+        "usart3.h": "c",
+        "gpio.h": "c",
+        "stdio.h": "c",
+        "lv_port_disp.h": "c",
+        "lcd_init.h": "c",
+        "lcd.h": "c",
+        "timer.h": "c",
+        "lvgl.h": "c",
+        "lv_log.h": "c"
     }
 }

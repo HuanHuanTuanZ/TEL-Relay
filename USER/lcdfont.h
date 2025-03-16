@@ -657,5 +657,3 @@ const typFNT_GB32 tfont32[]={
 };
 
 #endif
-
-

@@ -1,7 +1,6 @@
 #include "common.h"
 // #include "lcd.h"
 #include "adc.h"
-#include "ips.h"
 #include "math.h"
 #include "gpio.h"
 
@@ -122,6 +121,7 @@ void input() // 输入运算
 	battery_check();
 }
 
+/*
 ////////菜单按键检测/////////////////////////////////////////////////////////////////////////////
 u8 flag1 = 0, flag2 = 0;
 u8 count1 = 0, count2 = 0;
@@ -260,3 +260,4 @@ void menu_check()
 		DOWN = temp;
 	}
 }
+*/

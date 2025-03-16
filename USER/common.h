@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 #include "delay.h"
 #include "sys.h"
-#include "xuan.h"
+#include "Ctrl.h"
 
 #if USB
 #include "usb_hw.h"
@@ -98,11 +98,11 @@ extern u32 time_10ms3;
 extern u8 time_use3;
 
 extern u8 CRSF_TLM_flag;
-extern u8 TIM2CH1_CAPTURE_STA;	// 输入捕获状态
+extern u8 TIM2CH1_CAPTURE_STA;  // 输入捕获状态
 extern u16 TIM2CH1_CAPTURE_VAL; // 输入捕获值
-extern u16 ppm_value[8];		// ppm输入值
-//extern u8 ppm_mode;				// 1是输入，0是输出
-extern u8 ppm_status;			// ppm输入状态
+extern u16 ppm_value[8];        // ppm输入值
+// extern u8 ppm_mode;				// 1是输入，0是输出
+extern u8 ppm_status; // ppm输入状态
 extern u8 UP, DOWN, LEFT, RIGHT, ESC, OK;
 extern u8 first_splash;
 extern u8 PC, RC, FC, SC, BC;
@@ -129,20 +129,20 @@ extern int16 param[2][16];
 extern u8 theme;
 
 /////////////CRSF
-extern int16 crsf_pitch;		  // 俯仰
-extern int16 crsf_roll;			  // 横滚
-extern int16 crsf_yaw;			  // 偏航
-extern u16 crsf_bat;			  // 电压
-extern u16 crsf_cur;			  // 电流
-extern u16 crsf_capacity;		  // 电池容量
-extern u8 crsf_remaining;		  // 剩余电量
-extern u8 crsf_flight_mode;		  // 飞行模式
-extern int crsf_latitude;		  // 经度
-extern int crsf_longitude;		  // 纬度
-extern int16 crsf_ground_speed;	  // 地速
-extern int16 crsf_heading;		  // 朝向
-extern int16 crsf_altitude;		  // 卫星海拔
-extern u8 crsf_satellites;		  // 卫星数
+extern int16 crsf_pitch;          // 俯仰
+extern int16 crsf_roll;           // 横滚
+extern int16 crsf_yaw;            // 偏航
+extern u16 crsf_bat;              // 电压
+extern u16 crsf_cur;              // 电流
+extern u16 crsf_capacity;         // 电池容量
+extern u8 crsf_remaining;         // 剩余电量
+extern u8 crsf_flight_mode;       // 飞行模式
+extern int crsf_latitude;         // 经度
+extern int crsf_longitude;        // 纬度
+extern int16 crsf_ground_speed;   // 地速
+extern int16 crsf_heading;        // 朝向
+extern int16 crsf_altitude;       // 卫星海拔
+extern u8 crsf_satellites;        // 卫星数
 extern int16 crsf_vertical_speed; // 垂直速度
 extern int16 crsf_baro_altitude;  // 气压计海拔
 extern u8 crsf_rx_rssi_perc;
@@ -164,10 +164,10 @@ extern u8 tlm;
 extern u8 mavlink_enable;
 extern int16 bat_vol;
 
-extern u8 lcd_dir;	  // 屏幕翻转
+extern u8 lcd_dir;    // 屏幕翻转
 extern u8 lcd_mirror; // 屏幕镜像
 
-extern int16 hud_roll;	// 横滚角
+extern int16 hud_roll;  // 横滚角
 extern int16 hud_pitch; // 俯仰角
 extern int16 hud_yaw;
 extern int16 hud_alt;
@@ -228,11 +228,11 @@ void logic_operation(void);
 
 /////////通信信号
 
-//void SBUS_out(void);
+// void SBUS_out(void);
 void CRSF_out(void); // CRSF主进程
 void USB_out(void);
-//void ppm_enable(void);	// 开启PPM信号输出
-//void ppm_disable(void); // 关闭PPM信号输出
+// void ppm_enable(void);	// 开启PPM信号输出
+// void ppm_disable(void); // 关闭PPM信号输出
 void ppm_Cap_Init(u16 arr, u16 psc);
 
 /////////CRSF

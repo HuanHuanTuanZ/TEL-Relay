@@ -24,15 +24,16 @@ void STMFLASH_Write_NoCheck(u32 WriteAddr, u16 *pBuffer, u16 NumToWrite)
 	}
 }
 
-// 从指定地址开始写入指定长度的数据
-// WriteAddr:起始地址(此地址必须为2的倍数!!)
-// pBuffer:数据指针
-// NumToWrite:半字(16位)数(就是要写入的16位数据的个数.)
 #if STM32_FLASH_SIZE < 256
 #define STM_SECTOR_SIZE 1024 // 字节
 #else
 #define STM_SECTOR_SIZE 2048
 #endif
+
+// 从指定地址开始写入指定长度的数据
+// WriteAddr:起始地址(此地址必须为2的倍数!!)
+// pBuffer:数据指针
+// NumToWrite:半字(16位)数(就是要写入的16位数据的个数.)
 void STMFLASH_Write(u32 WriteAddr, u16 *pBuffer, u16 NumToWrite)
 {
 	u16 STMFLASH_BUF[STM_SECTOR_SIZE / 2]; // 最多是2K字节

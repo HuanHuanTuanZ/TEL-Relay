@@ -18,7 +18,7 @@
 // 初始化IO 串口3
 // pclk1:PCLK1时钟频率(Mhz)
 // bound:波特率
-void usart3_init(u32 bound) //S.PORT
+void usart3_init(u32 bound) // S.PORT
 {
 
 	NVIC_InitTypeDef NVIC_InitStructure;

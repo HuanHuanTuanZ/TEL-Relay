@@ -1,7 +1,7 @@
 // #include "open_tel_mavlink.h"
 #include "common.h"
 #include "crsf.h"
-#include "xuan.h"
+#include "Ctrl.h"
 #include "gpio.h"
 
 volatile u8 CRSF_package[26] = {0xEE, 24, 0x16, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03, 0x10, 0x80, 0x00,
@@ -49,6 +49,7 @@ void CRSF_Package(void);						// CRSF协议遥控数据封包
 void CRSF_param_package(u8 dataType, u8 param); // 发送CRSF设置参数封包函数
 void CRSF_Proess(void);							// CRSF主进程
 
+u16 crsf_value[16]; // CRSF通道数值
 u8 crsf_tx = 0;		// 发送状态标志位
 void CRSF_Package() // CRSF协议遥控数据封包
 {
@@ -241,10 +242,28 @@ void crsf_clear()
 	rx_signal = 0;
 }
 
+void CRSF_Tel_Out() // CRSF回传数据输出
+{
+	if (input_type == 1)
+	{
+		u8 i = 0;
+		u8 len = CRSF_TLM_buf[1] + 4;
+		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) != SET)
+			; // 等待发送结束
+		for (i = 0; i < len; i++)
+		{
+			USART_SendData(USART1, CRSF_TLM_buf[i]); // 向串口1发送数据
+			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) != SET)
+				; // 等待发送结束
+		}
+	}
+}
+
 void crsf_depackage() // CRSF回传数据解码
 {
 	if (crc8(&CRSF_TLM_buf[2], CRSF_TLM_buf[1] - 1) == CRSF_TLM_buf[CRSF_TLM_buf[1] + 1]) // CRC校验
 	{
+		void CRSF_Tel_Out(); // 遥测数据包直接推回接收机
 		u8 id = CRSF_TLM_buf[2];
 		// if(id!=LINK_ID)tlm_temp++;
 		switch (id)
@@ -412,9 +431,7 @@ void USART3_IRQHandler(void) // 串口3中断服务程序
 				{
 					if (Res == crsf_id[i]) // 找到ID
 					{
-#if CRSF_DEBUG
 						CRSF_rate_temp[i]++;
-#endif
 						CRSF_start = 3;
 						break;
 					}
