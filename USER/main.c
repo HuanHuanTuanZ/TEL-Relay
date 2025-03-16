@@ -159,7 +159,7 @@ int main(void)
 	while (1)
 	{
 		LCD_Clear(WHITE);
-		LCD_ShowStr(10, 10, (u8 *)"信息连接", BLACK, YELLOW, 16, 0);
+		LCD_ShowStr(10, 10, (u8 *)"信息连接", BLACK, YELLOW, 16, 1);
 		LCD_ShowIntNum(10, 26, usb_flag, 4, BLACK, YELLOW, 16);
 		LCD_Reflash();
 
@@ -189,6 +189,7 @@ void TIM3_IRQHandler(void) // TIM3    20ms
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) // 中断
 	{
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update); // 清除中断标志
+		beep_queue_operation();
 	}
 }
 

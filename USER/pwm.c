@@ -93,7 +93,7 @@ void BEEP_Init(u16 arr, u16 psc)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);						// 使能定时器3时钟
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE); // 使能GPIO外设和AFIO复用功能模块时钟
 
-	GPIO_PinRemapConfig(GPIO_Remap_TIM4, ENABLE); // TIM4部分重映射  TIM4_CH2->PB5
+	GPIO_PinRemapConfig(GPIO_Remap_TIM4, ENABLE); // TIM4部分重映射
 
 	// 设置该引脚为复用输出功能,输出TIM4 CH2的PWM脉冲波形	GPIOB.5
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;		// TIM_CH2

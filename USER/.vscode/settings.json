@@ -4,7 +4,6 @@
         "*.ndjson": "jsonl",
         "*.dbclient-js": "javascript",
         "common.h": "c",
-        "xuan.h": "c",
         "usart.h": "c",
         "sys.h": "c",
         "delay.h": "c",
