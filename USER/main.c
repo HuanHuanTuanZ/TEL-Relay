@@ -8,10 +8,10 @@
 #include "gpio.h"
 #include "usart.h"
 #include "usart3.h"
-
+#include "pic.h"
 /////////////////////////////////系统参数///////////////////////////////////
-u8 ui_1hz = 0, ui_10hz = 0, ui_20hz = 0, ui_100hz = 0;	   // 界面刷新频率标志
-u8 tsk_1hz = 0, tsk_10hz = 0, tsk_20hz = 0, tsk_100hz = 0; // 任务处理频率标志
+u8 ui_1hz = 0, ui_10hz = 0, ui_20hz = 0, ui_100hz = 0;				// 界面刷新频率标志
+u8 tsk = 0, tsk_1hz = 0, tsk_10hz = 0, tsk_20hz = 0, tsk_100hz = 0; // 任务处理频率标志
 
 u8 time3 = 0;				// 界面定时器3计数器
 u8 time1 = 0;				// 任务定时器1计数器
@@ -47,7 +47,7 @@ u8 ESC_release, OK_release;		   // 菜单按键释放标志
 u8 fps = 0;						   // 界面刷新帧率
 u8 fps_temp = 0;				   // 界面刷新帧率计数器
 u8 first_splash = 0;			   // UI首次刷新标志
-u8 ui_flag[4] = {0, 0, 0};		   // 桌面UI标志
+u8 ui_flag[3] = {0, 0, 0};		   // 桌面UI标志
 u8 ui_current = 0;				   // 桌面当前UI标志
 u8 ui_menu_edit = 0;			   // 设置界面标志
 u8 ui_menu_flag = 0;			   // 设置界面当前UI标志
@@ -116,13 +116,12 @@ int main(void)
 	delay_ms(100);									// 上电延时，确保电源稳定
 	Gpio_Init();									// 初始化输出引脚
 	BEEP_Init(999, CPU_SPEED - 1);					// 蜂鸣器初始化
-	LCD_BLK_Clr();									// 关闭背光
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	Adc_Init();										// ADC初始化
 
 	if (input_type)
 	{
-		uart_init(420000); // 串口1初始化为SBUS
+		uart_init(420000); // 串口1初始化为CRSF
 	}
 	else
 	{
@@ -138,57 +137,106 @@ int main(void)
 	USB_Connect(TRUE); // 使能USB
 #endif
 
-	LCD_Init(); // LCD初始化
-	LCD_Fill(0, 0, LCD_W, LCD_H, BLUE);
-	LCD_BLK_Set();						 // 打开背光
-	ppm_Cap_Init(0xffff, CPU_SPEED - 1); // 以1Mhz的频率计数
+	LCD_Init();								 // LCD初始化
+	LCD_Fill(0, 0, LCD_W, LCD_H, LIGHTBLUE); // 全屏非缓存覆写
+	LCD_BLK_Set();							 // 打开背光
+	ppm_Cap_Init(0xffff, CPU_SPEED - 1);	 // 以1Mhz的频率计数
 
-	TIM3_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器10ms中断
-	TIM1_Int_Init(999, CPU_SPEED * 10 - 1); // 定时器1ms中断
+	TIM3_Int_Init(1999, CPU_SPEED * 10 - 1); // 定时器3 50HZ 20ms中断
+	TIM1_Int_Init(999, CPU_SPEED * 10 - 1);	 // 定时器1 100HZ 10ms中断
 
 	TIM_Cmd(TIM3, (FunctionalState)1); // 打开任务定时器
 	TIM_Cmd(TIM1, (FunctionalState)1); // 打开任务定时器
 
+	// LCD_ShowPicture(0, 0, 160, 80, gImage_1);
 	// beep_enable = read16(25); // 检测蜂鸣器使能状态
 	// 注册蜂鸣器开机声音，反向注册
-	beep_queue_regedit(1400, 10);
-	beep_queue_regedit(0, 4);
-	beep_queue_regedit(1200, 10);
-	beep_queue_regedit(0, 4);
-	beep_queue_regedit(1000, 10);
+	beep_queue_regedit(1400, 5);
+	beep_queue_regedit(0, 2);
+	beep_queue_regedit(1200, 5);
+	beep_queue_regedit(0, 2);
+	beep_queue_regedit(1000, 5);
 	while (1)
 	{
-		LCD_Clear(WHITE);
-		LCD_ShowStr(10, 10, (u8 *)"信息连接", BLACK, YELLOW, 16, 1);
-		LCD_ShowIntNum(10, 26, usb_flag, 4, BLACK, YELLOW, 16);
-		LCD_Reflash();
-
-		if (USB_Configuration)
+		// LCD_Clear(WHITE);
+		// LCD_ShowIntNum(10, 26, time3, 4, BLACK, YELLOW, 16);
+		if (ui_menu_edit == 0)
 		{
-			if (usb_flag == 0)
+			switch (ui_current)
 			{
-				message("USB已连接", 20);
-				out_mode_temp = out_mode;
-				out_mode = 2;
+			case 0:
+				switch (ui_flag[ui_current])
+				{
+					break;
+				}
+				break;
+			case 1:
+				switch (ui_flag[ui_current])
+				{
+					break;
+				}
+				break;
+			case 2:
+				switch (ui_flag[ui_current])
+				{
+					break;
+				}
+				break;
 			}
-			usb_flag = 10;
 		}
-		else if (usb_flag)
-			usb_flag--;
-		else if (out_mode == 2)
+		else
 		{
-			out_mode = out_mode_temp;
-			message("USB已断开", 20);
 		}
+		// message_reflash(); // 刷新提示信息
+		// LCD_Reflash();
 	}
 }
 
-/*---------------------------------UI界面定时器-----------------------------------------------------------------------*/
-void TIM3_IRQHandler(void) // TIM3    20ms
+/*---------------------------------UI定时器-----------------------------------------------------------------------*/
+void TIM3_IRQHandler(void) // TIM3		20ms		50HZ
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) // 中断
 	{
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update); // 清除中断标志
+		tsk++;
+		menu_check();	   // 按钮检测
+		if (tsk % 10 == 0) // 5HZ 200ms 任务计数
+		{
+
+			if (message_time)
+				message_time--;
+		}
+		if (tsk == 50) // 1HZ 1S 任务计数
+		{
+			u8 i;
+			tsk = 0;
+			time3++;
+			if (USB_Configuration)
+			{
+				if (usb_flag == 0)
+				{
+					message("USB已连接", 10);
+					beep_positive();
+					out_mode = 2;
+				}
+				usb_flag = 10;
+			}
+			else if (usb_flag)
+				usb_flag--;
+			else if (out_mode == 2)
+			{
+				message("USB已断开", 10);
+				beep_negative();
+				out_mode = 1;
+			}
+			for (i = 0; i < 15; i++)
+			{
+				CRSF_rate[i] = CRSF_rate_temp[i];
+				CRSF_rate_temp[i] = 0;
+			}
+			link_status_check();
+		}
+
 		beep_queue_operation();
 	}
 }
@@ -197,9 +245,9 @@ void TIM3_IRQHandler(void) // TIM3    20ms
 /*---------------------------------主任务定时器-----------------------------------------------------------------------*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TIM1_UP_IRQHandler(void) // 0.5MS查询一次
+void TIM1_UP_IRQHandler(void) // TIM1		10ms		100HZ
 {
-	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET) // 0.5中断
+	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET) // 1MS中断
 	{
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update); // 清除中断标志
 		time1++;

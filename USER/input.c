@@ -1,5 +1,6 @@
 #include "common.h"
-// #include "lcd.h"
+#include "lcd.h"
+#include "lcd_init.h"
 #include "adc.h"
 #include "math.h"
 #include "gpio.h"
@@ -45,8 +46,9 @@ void battery_check() // 电压读取
 	}
 }
 
-const u8 adc_map[6] = {1, 4, 5, 6, 7, 8};
+// const u8 adc_map[6] = {1, 4, 5, 6, 7, 8};
 
+/*
 void hardinput() // ADC输入
 {
 	u8 i;
@@ -80,48 +82,53 @@ void hardinput() // ADC输入
 	hardware_value[8] = !ch9 * 1000 + 1000;
 	hardware_value[9] = !ch10 * 1000 + 1000;
 }
+*/
 
 void input() // 输入运算
 {
 	u8 i;
-	u16 temp[16];
-	hardinput();
+	// u16 temp[16];
+	//  hardinput();
 	for (i = 0; i < 16; i++)
 	{
-		if (ch_map[i] < 10)
+		if (ch_map[i] < 16)
 		{
-			if (adc_enable)
-				temp[i] = hardware_value[ch_map[i]];
+			if (sbus_value[i] > 352 || crsf_value[i] > 400)
+			{
+				if (input_type)
+				{
+					CH_input[i] = (crsf_value[ch_map[i]] + 1408) / 1.6;
+					CH_out[i] = crsf_value[ch_map[i]];
+				}
+				else
+				{
+					CH_input[i] = (sbus_value[ch_map[i]] + 1408) / 1.6;
+					CH_out[i] = sbus_value[ch_map[i]];
+				}
+			}
 			else
-				temp[i] = 1500;
+			{
+				CH_input[i] = 992;
+				CH_out[i] = 992;
+			}
 		}
-		else if (ch_map[i] < 18)
+		else if (ch_map[i] < 24)
 		{
-			if (ppm_value[ch_map[i] - 10] >= 500)
-				temp[i] = ppm_value[ch_map[i] - 10];
+			if (ppm_value[ch_map[i] - 16] >= 500)
+			{
+				CH_input[i] = ppm_value[ch_map[i] - 16];
+				CH_out[i] = ppm_value[ch_map[i] - 16] * 1.6 - 1408;
+			}
 			else
-				temp[i] = 1500;
+			{
+				CH_input[i] = 1500;
+				CH_out[i] = 992;
+			}
 		}
-		else if (ch_map[i] < 34)
-		{
-			if (sbus_value[ch_map[i] - 18] >= 500)
-				temp[i] = sbus_value[ch_map[i] - 18];
-			else
-				temp[i] = 1500;
-		}
-		else if (ch_map[i] < 42)
-			temp[i] = 1500;
-
-		// 运算通道数据
-		if (temp[i] <= 1500)
-			CH_input[i] = 3000 * ch_rev[i] + (1 - 2 * ch_rev[i]) * ((temp[i] - 1000) * (1500 + ch_mid[i] - 1000 - ch_min[i]) / 500 + 1000 + ch_min[i]);
-		else
-			CH_input[i] = 3000 * ch_rev[i] + (1 - 2 * ch_rev[i]) * ((temp[i] - 1500) * (2000 + ch_max[i] - 1500 - ch_mid[i]) / 500 + 1500 + ch_mid[i]);
 	}
 	battery_check();
 }
 
-/*
 ////////菜单按键检测/////////////////////////////////////////////////////////////////////////////
 u8 flag1 = 0, flag2 = 0;
 u8 count1 = 0, count2 = 0;
@@ -131,6 +138,7 @@ u8 remote_ctrl = 1;
 
 extern int16 logic_source(u8 seq);
 
+/*
 int16 remote_ctrl_source(u8 seq)
 {
 	if (seq == 0)
@@ -155,6 +163,8 @@ u8 remote_ctrl_check()
 		return 1;
 	return 0;
 }
+*/
+
 #include "timer.h"
 
 void menu_check()
@@ -249,15 +259,4 @@ void menu_check()
 		ESC = 0;
 		OK = 0;
 	}
-
-	if (lcd_dir) // 屏幕翻转了
-	{
-		u8 temp = LEFT;
-		LEFT = RIGHT;
-		RIGHT = temp;
-		temp = UP;
-		UP = DOWN;
-		DOWN = temp;
-	}
 }
-*/

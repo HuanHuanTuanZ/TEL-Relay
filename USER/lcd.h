@@ -25,6 +25,9 @@ void LCD_ShowPicture(u16 x, u16 y, u16 length, u16 width, const u8 pic[]); // ÏÔ
 void LCD_ShowStr(u16 x, u16 y, u8 *str, u16 fc, u16 bc, u8 sizey, u8 mode);
 void LCD_Reflash(void);
 void LCD_Clear(u16 color);
+void LCD_FillRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u16 color);
+void LCD_ShowRoundRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u8 r, u16 color);
+void LCD_ShowFillRoundRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u8 r, u16 color);
 
 // »­±ÊÑÕÉ«
 #define WHITE 0xFFFF

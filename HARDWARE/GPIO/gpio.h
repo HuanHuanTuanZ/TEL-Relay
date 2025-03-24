@@ -17,18 +17,18 @@
 
 #define ppm             PBout(10)
 
-#define menu_up         PBin(6)
-#define menu_down       PBin(3)
-#define menu_left       PBin(4)
+#define menu_up         PBin(5)
+#define menu_down       PBin(4)
+#define menu_left       PBin(6)
 #define menu_right      PAin(15)
-#define menu_ok         PBin(5)
+#define menu_ok         PBin(3)
 #define menu_esc        PBin(2)  //PB12 ---> PB2
 
 
-#define ch7        PBin(2)
-#define ch8        PCin(15)
-#define ch9        PCin(14)
-#define ch10       PCin(13)
+//#define ch7        PBin(2)
+//#define ch8        PCin(15)
+//#define ch9        PCin(14)
+//#define ch10       PCin(13)
 
 
 #define sport_dir       PBout(7)

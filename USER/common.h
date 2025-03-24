@@ -106,13 +106,14 @@ extern u8 ppm_status; // ppm ‰»Î◊¥Ã¨
 extern u8 UP, DOWN, LEFT, RIGHT, ESC, OK;
 extern u8 first_splash;
 extern u8 PC, RC, FC, SC, BC;
-extern u8 ui_flag[4];
+extern u8 ui_flag[3];
 extern u8 ui_current;
 extern u8 ui_menu_edit;
 extern u8 ui_menu_flag;
 extern u8 ui_select_flag;
 extern u8 sbus_buf[25];
 extern u16 sbus_value[16];
+extern u16 crsf_value[16];
 extern u8 sbus_status;
 extern u8 tele_flag;
 extern u8 mavlink_flag;

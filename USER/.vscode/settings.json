@@ -22,6 +22,7 @@
         "lcd.h": "c",
         "timer.h": "c",
         "lvgl.h": "c",
-        "lv_log.h": "c"
+        "lv_log.h": "c",
+        "adc.h": "c"
     }
 }

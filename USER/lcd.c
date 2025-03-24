@@ -682,7 +682,7 @@ void LCD_Reflash()
 	for (i = 0; i < sum; i++)
 	{
 		// SPI_I2S_SendData(SPI2, color8_index[gram[i]] >> 8);
-		//SPI_I2S_SendData(SPI2, gram[i] >> 8);
+		// SPI_I2S_SendData(SPI2, gram[i] >> 8);
 		//__nop();
 		//__nop();
 		//__nop();
@@ -692,7 +692,7 @@ void LCD_Reflash()
 		//__nop();
 		//__nop();
 		// SPI_I2S_SendData(SPI2, color8_index[gram[i]]);
-		//SPI_I2S_SendData(SPI2, gram[i]);
+		// SPI_I2S_SendData(SPI2, gram[i]);
 		//__nop();
 		//__nop();
 		//__nop();
@@ -706,10 +706,112 @@ void LCD_Reflash()
 	LCD_CS_Set();
 }
 
+/******************************************************************************
+	  函数说明：缓存覆写
+	  入口数据：color 覆写颜色
+	  返回值：  无
+******************************************************************************/
 void LCD_Clear(u16 color)
 {
 	u16 *xs = gram;
 	u32 count = LCD_W * LCD_H;
 	while (count--)
 		*xs++ = color;
+}
+
+/******************************************************************************
+	  函数说明：绘制实心矩形
+	  入口数据：xsta,ysta   起始坐标
+				xend,yend   终止坐标
+								color       要填充的颜色
+	  返回值：  无
+******************************************************************************/
+void LCD_FillRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u16 color)
+{
+	u16 x,y;
+	for (y = ysta; y <= yend; y++)
+	{
+		for (x = xsta; x <= xend; x++)
+		{
+			LCD_DrawPoint(x, y, color);
+		}
+	}
+}
+
+/******************************************************************************
+	  函数说明：绘制实心圆角矩形
+	  入口数据：xsta,ysta   起始坐标
+				xend,yend   终止坐标
+				r 	圆角半径
+				color       要填充的颜色
+	  返回值：  无
+******************************************************************************/
+void LCD_ShowFillRoundRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u8 r, u16 color)
+{
+	int a;
+	int di;
+	u16 x, y;
+	x = xend - r;
+	y = yend - r;
+	a = 0;
+	di = 3 - (r << 1);
+	while (a <= r)
+	{
+		LCD_DrawLine(xsta + a + x, ysta - r - y, xsta + a + x, ysta + r + y, color);
+		LCD_DrawLine(xsta + r + x, ysta - a - y, xsta + r + x, ysta + a + y, color);
+		LCD_DrawLine(xsta - a - x, ysta - r - y, xsta - a - x, ysta + r + y, color);
+		LCD_DrawLine(xsta - r - x, ysta - a - y, xsta - r - x, ysta + a + y, color);
+		a++;
+
+		if (di < 0)
+			di += 4 * a + 6;
+		else
+		{
+			di += 10 + 4 * (a - r);
+			r--;
+		}
+	}
+	LCD_FillRect(xsta - x, ysta - yend, xsta + x, ysta + yend, color);
+}
+
+/******************************************************************************
+	  函数说明：绘制圆角矩形
+	  入口数据：xsta,ysta   起始坐标
+				xend,yend   终止坐标
+				r 	圆角半径
+				color       颜色
+	  返回值：  无
+******************************************************************************/
+void LCD_ShowRoundRect(u16 xsta, u16 ysta, u16 xend, u16 yend, u8 r, u16 color)
+{
+	int a;
+	int di;
+	u16 x, y;
+	x = xend - r;
+	y = yend - r;
+	a = 0;
+	di = 3 - (r << 1);
+	while (a <= r)
+	{
+		LCD_DrawPoint(xsta + a + x, ysta - r - y, color);
+		LCD_DrawPoint(xsta + r + x, ysta - a - y, color);
+		LCD_DrawPoint(xsta + r + x, ysta + a + y, color);
+		LCD_DrawPoint(xsta + a + x, ysta + r + y, color);
+		LCD_DrawPoint(xsta - a - x, ysta + r + y, color);
+		LCD_DrawPoint(xsta - r - x, ysta + a + y, color);
+		LCD_DrawPoint(xsta - a - x, ysta - r - y, color);
+		LCD_DrawPoint(xsta - r - x, ysta - a - y, color);
+		a++;
+		if (di < 0)
+			di += 4 * a + 6;
+		else
+		{
+			di += 10 + 4 * (a - r);
+			r--;
+		}
+	}
+	LCD_DrawLine(xsta - x, ysta - yend, xsta + x, ysta - yend, color);
+	LCD_DrawLine(xsta - x, ysta + yend, xsta + x, ysta + yend, color);
+	LCD_DrawLine(xsta - xend, ysta - y, xsta - xend, ysta + y, color);
+	LCD_DrawLine(xsta + xend, ysta - y, xsta + xend, ysta + y, color);
 }

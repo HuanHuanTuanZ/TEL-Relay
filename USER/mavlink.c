@@ -40,17 +40,3 @@ void send_heartbeat_aat()
 {
 	mavlink_send_message(MAVLINK_COMM_0, MSG_HEARTBEAT, 0); // ·¢ËÍÐÄÌø
 }
-
-void request_mavlink(void)
-{
-	tx_request_data_stream.req_stream_id = 0; //
-	tx_request_data_stream.req_message_rate = 2;
-	tx_request_data_stream.start_stop = 1;
-	mavlink_send_message(MAVLINK_COMM_0, MSG_ID_REQUEST_DATA_STREAM, 0);
-
-	tx_request_data_stream.req_stream_id = 10; //
-	tx_request_data_stream.req_message_rate = 10;
-	tx_request_data_stream.start_stop = 1;
-	mavlink_send_message(MAVLINK_COMM_0, MSG_ID_REQUEST_DATA_STREAM, 0);
-}
-

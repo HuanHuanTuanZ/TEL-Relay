@@ -32,7 +32,7 @@ u32 read32(u16 addr)
 }
 
 #define model_param_max 172
-//void model_reset()
+// void model_reset()
 //{
 //	u8 i;
 //	u16 temp[model_param_max];
@@ -70,9 +70,9 @@ u32 read32(u16 addr)
 //	STMFLASH_Write(addr, temp, model_param_max);
 //	sprintf(model_name, "Model%02d", model_current + 1);
 //	model_name_save(model_addr + 164); // 164-171
-//}
+// }
 
-//void model_read() // 通道数据读取
+// void model_read() // 通道数据读取
 //{
 //	u8 i;
 //	if (read16(model_addr + model_size - 1) != 1)
@@ -107,7 +107,7 @@ u32 read32(u16 addr)
 //		logic_mode[i] = read16(model_addr + 160 + i);
 //	}
 //	model_name_read(model_addr + 164); // 164-171
-//}
+// }
 
 #define system_param_max 35
 void factory() // 初始化
@@ -150,7 +150,7 @@ void factory() // 初始化
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*---------------------------------读取设置---------------------------------------------------------------------------*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//void system_read()
+// void system_read()
 //{
 //	u8 i;
 //	hardware_id = *(vu32 *)(0x1FFFF7E8) + *(vu32 *)(0x1FFFF7EC) + *(vu32 *)(0x1FFFF7F0);
@@ -188,18 +188,18 @@ void factory() // 初始化
 //
 //	theme_change(theme);
 //	model_read();
-//}
+// }
 
-//void model_name_save(int16 addr)
+// void model_name_save(int16 addr)
 //{
 //	u16 temp[8];
 //	u8 i;
 //	for (i = 0; i < 8; i++)
 //		temp[i] = model_name[2 * i] << 8 | model_name[2 * i + 1];
 //	STMFLASH_Write(FLASH_SAVE_ADDR + addr * 2, temp, 8);
-//}
+// }
 //
-//void model_name_read(int16 addr)
+// void model_name_read(int16 addr)
 //{
 //	u16 temp[8];
 //	u8 i;
@@ -209,16 +209,25 @@ void factory() // 初始化
 //		model_name[2 * i] = temp[i] >> 8;
 //		model_name[2 * i + 1] = temp[i];
 //	}
-//}
+// }
 
 u8 message_time = 0;
 char message_str[32];
-
 
 void message(char *p, u8 time)
 {
 	message_time = time;
 	strcpy(message_str, p);
+}
+
+void message_reflash()
+{
+	if (message_time)
+	{
+		LCD_ShowFillRoundRect(80, 40, 56, 8, 4, YELLOW);
+		LCD_ShowRoundRect(80, 40, 56, 8, 4, BLACK);
+		LCD_ShowStr(80 - strlen(message_str) * 3, 34, (u8 *)message_str, BLACK, YELLOW, 12, 1);
+	}
 }
 
 void link_status_check()
@@ -229,7 +238,7 @@ void link_status_check()
 		if (sbus_connected == 0)
 		{
 			sbus_connected = 1;
-			message("SBUS已连接", 20);
+			message("SBUS已连接", 10);
 			beep_positive();
 		}
 	}
@@ -238,7 +247,7 @@ void link_status_check()
 		if (sbus_connected)
 		{
 			sbus_connected = 0;
-			message("SBUS已断开", 20);
+			message("SBUS已断开", 10);
 			beep_negative();
 		}
 	}
@@ -249,7 +258,7 @@ void link_status_check()
 		if (ppm_connected == 0)
 		{
 			ppm_connected = 1;
-			message("PPM已连接", 20);
+			message("PPM已连接", 10);
 			beep_positive();
 		}
 	}
@@ -258,7 +267,7 @@ void link_status_check()
 		if (ppm_connected)
 		{
 			ppm_connected = 0;
-			message("PPM已断开", 20);
+			message("PPM已断开", 10);
 			beep_negative();
 		}
 	}
@@ -269,10 +278,10 @@ void link_status_check()
 		{
 			crsf_param_buf = elrs_tlm - 1;
 			crsf_param_flag = 2;
-			message("ELRS-TX已连接", 20);
+			message("ELRS-TX已连接", 10);
 			beep_positive();
 		}
-		elrs_connected = 3;
+		elrs_connected = 2;
 	}
 	else
 	{
@@ -280,9 +289,10 @@ void link_status_check()
 		{
 			elrs_connected--;
 			if (elrs_connected == 0)
-				message("ELRS-TX已断开", 20);
-			beep_negative();
-			// crsf_clear();
+			{
+				message("ELRS-TX已断开", 10);
+				beep_negative();
+			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +302,7 @@ void link_status_check()
 		{
 			elrs_back_connected = 1;
 			first_splash = 1;
-			message("ELRS回传已连接", 20);
+			message("ELRS回传已连接", 10);
 			beep_positive();
 		}
 	}
@@ -301,27 +311,7 @@ void link_status_check()
 		if (elrs_back_connected)
 		{
 			elrs_back_connected = 0;
-			message("ELRS回传已断开", 20);
-			beep_negative();
-		}
-	}
-
-	if (mavlink_flag)
-	{
-		if (mavlink_connected == 0)
-		{
-			mavlink_connected = 1;
-			first_splash = 1;
-			message("Mavlink已连接", 20);
-			beep_positive();
-		}
-	}
-	else
-	{
-		if (mavlink_connected)
-		{
-			mavlink_connected = 0;
-			message("Mavlink已断开", 20);
+			message("ELRS回传已断开", 10);
 			beep_negative();
 		}
 	}

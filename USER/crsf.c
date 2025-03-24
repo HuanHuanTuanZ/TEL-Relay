@@ -49,7 +49,6 @@ void CRSF_Package(void);						// CRSF协议遥控数据封包
 void CRSF_param_package(u8 dataType, u8 param); // 发送CRSF设置参数封包函数
 void CRSF_Proess(void);							// CRSF主进程
 
-u16 crsf_value[16]; // CRSF通道数值
 u8 crsf_tx = 0;		// 发送状态标志位
 void CRSF_Package() // CRSF协议遥控数据封包
 {
@@ -259,13 +258,14 @@ void CRSF_Tel_Out() // CRSF回传数据输出
 	}
 }
 
+
 void crsf_depackage() // CRSF回传数据解码
 {
 	if (crc8(&CRSF_TLM_buf[2], CRSF_TLM_buf[1] - 1) == CRSF_TLM_buf[CRSF_TLM_buf[1] + 1]) // CRC校验
 	{
-		void CRSF_Tel_Out(); // 遥测数据包直接推回接收机
 		u8 id = CRSF_TLM_buf[2];
-		// if(id!=LINK_ID)tlm_temp++;
+		if (input_type)
+			CRSF_Tel_Out(); // 遥测数据包直接推回接收机
 		switch (id)
 		{
 		case LINK_ID:					   // 连接信息
