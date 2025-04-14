@@ -41,7 +41,7 @@ void sbus_unpackage() // SBUS解包函数
     sbus_value[15] = ((sbus_buf[21] >> 5 | sbus_buf[22] << 3) & 0x07FF);
 }
 
-void crsf_rc_depackage()
+void crsf_rc_depackage() //CESF解包
 {
     crsf_value[0] = ((uint16_t)crsf_rc_buf[3] >> 0 | ((uint16_t)crsf_rc_buf[4] << 8)) & 0x07FF;
     crsf_value[1] = ((uint16_t)crsf_rc_buf[4] >> 3 | ((uint16_t)crsf_rc_buf[5] << 5)) & 0x07FF;
@@ -75,7 +75,7 @@ void USART1_IRQHandler(void) // 串口1中断服务程序
                 if (USART1_RX_STA == (crsf_rc_len + 2)) // 接收完成
                 {
                     CRSF_RC_start = 0;
-                    CRSF_TLM_flag = 3;
+                    //CRSF_TLM_flag = 3;
                     crsf_rc_depackage();
                 }
             }
