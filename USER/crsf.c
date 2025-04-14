@@ -5,7 +5,7 @@
 #include "gpio.h"
 
 volatile u8 CRSF_package[26] = {0xEE, 24, 0x16, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03, 0x10, 0x80, 0x00,
-								0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04, 0x00}; // crsfĞ­Òé°ü
+								0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04, 0x00}; // crsfåè®®åŒ…
 
 #define GPS_ID 0x02
 #define CF_VARIO_ID 0x07
@@ -41,30 +41,30 @@ const u8 crsf_id[15] =
 
 #define CRSF_INTERVAL 2
 
-void CRSF_send(u8 *package, u8 len); // ·¢ËÍCRSFĞ­Òé°ü
+void CRSF_send(u8 *package, u8 len); // å‘é€CRSFåè®®åŒ…
 /**
- * @brief CRSFĞ­ÒéÒ£¿ØÊı¾İ·â°ü
+ * @brief CRSFåè®®é¥æ§æ•°æ®å°åŒ…
  */
-void CRSF_Package(void);						// CRSFĞ­ÒéÒ£¿ØÊı¾İ·â°ü
-void CRSF_param_package(u8 dataType, u8 param); // ·¢ËÍCRSFÉèÖÃ²ÎÊı·â°üº¯Êı
-void CRSF_Proess(void);							// CRSFÖ÷½ø³Ì
+void CRSF_Package(void);						// CRSFåè®®é¥æ§æ•°æ®å°åŒ…
+void CRSF_param_package(u8 dataType, u8 param); // å‘é€CRSFè®¾ç½®å‚æ•°å°åŒ…å‡½æ•°
+void CRSF_Proess(void);							// CRSFä¸»è¿›ç¨‹
 
-u8 crsf_tx = 0;		// ·¢ËÍ×´Ì¬±êÖ¾Î»
-void CRSF_Package() // CRSFĞ­ÒéÒ£¿ØÊı¾İ·â°ü
+u8 crsf_tx = 0;		// å‘é€çŠ¶æ€æ ‡å¿—ä½
+void CRSF_Package() // CRSFåè®®é¥æ§æ•°æ®å°åŒ…
 {
 	u8 i = 0;
-	u32 temp[16];								// Í¨µÀÊı¾İ»º´æ
-	volatile u8 *crc_start;						// crcĞ£ÑéÆğÊ¼Î»ÖÃ
-	u32 bits = 0;								// Î´Öª
-	u8 bitsavailable = 0;						// Î´Öª
-	volatile u8 *buf = CRSF_package;			// Ğ­Òé°üÖ¸Õë
-	*buf++ = CRSF_ADDRESS_CRSF_TRANSMITTER;		// 0ºÅÔªËØ£¬°üÍ·ÉèÖÃÎª0xEE
-	*buf++ = 24;								// 1ºÅÔªËØÉèÖÃÎª24
-	crc_start = buf;							// crcĞ£Ñé´ÓµÚ2ºÅÔªËØ¿ªÊ¼£¬
-	*buf++ = CRSF_FRAMETYPE_RC_CHANNELS_PACKED; // 2ºÅÔªËØÉèÖÃÎª0x16
+	u32 temp[16];								// é€šé“æ•°æ®ç¼“å­˜
+	volatile u8 *crc_start;						// crcæ ¡éªŒèµ·å§‹ä½ç½®
+	u32 bits = 0;								// æœªçŸ¥
+	u8 bitsavailable = 0;						// æœªçŸ¥
+	volatile u8 *buf = CRSF_package;			// åè®®åŒ…æŒ‡é’ˆ
+	*buf++ = CRSF_ADDRESS_CRSF_TRANSMITTER;		// 0å·å…ƒç´ ï¼ŒåŒ…å¤´è®¾ç½®ä¸º0xEE
+	*buf++ = 24;								// 1å·å…ƒç´ è®¾ç½®ä¸º24
+	crc_start = buf;							// crcæ ¡éªŒä»ç¬¬2å·å…ƒç´ å¼€å§‹ï¼Œ
+	*buf++ = CRSF_FRAMETYPE_RC_CHANNELS_PACKED; // 2å·å…ƒç´ è®¾ç½®ä¸º0x16
 	for (i = 0; i < 16; i++)
-		temp[i] = CH_out[i] * 1.6 - 1408; /////////////////////Í¨µÀÊı¾İ»ñÈ¡£¬²¢½øĞĞ±ÈÀıËõ·Å
-	for (i = 0; i < 16; i++)			  // ¿ªÊ¼±àÂë£¬
+		temp[i] = CH_out[i] * 1.6 - 1408; /////////////////////é€šé“æ•°æ®è·å–ï¼Œå¹¶è¿›è¡Œæ¯”ä¾‹ç¼©æ”¾
+	for (i = 0; i < 16; i++)			  // å¼€å§‹ç¼–ç ï¼Œ
 	{
 		bits |= temp[i] << bitsavailable;
 		bitsavailable += 11;
@@ -75,11 +75,11 @@ void CRSF_Package() // CRSFĞ­ÒéÒ£¿ØÊı¾İ·â°ü
 			bitsavailable -= 8;
 		}
 	}
-	*buf++ = crc8(crc_start, 23); // CRC8Ğ£Ñé
+	*buf++ = crc8(crc_start, 23); // CRC8æ ¡éªŒ
 }
 
-uint8_t param_buf[8];						   // Ïòcrsf·¢ËÍÉèÖÃ²ÎÊıµÄÊı¾İ»º´æ
-void CRSF_param_package(u8 dataType, u8 param) // ·¢ËÍCRSFÉèÖÃ²ÎÊı·â°üº¯Êı
+uint8_t param_buf[8];						   // å‘crsfå‘é€è®¾ç½®å‚æ•°çš„æ•°æ®ç¼“å­˜
+void CRSF_param_package(u8 dataType, u8 param) // å‘é€CRSFè®¾ç½®å‚æ•°å°åŒ…å‡½æ•°
 {
 	uint8_t *crc_strat;
 	param_buf[0] = CRSF_ADDRESS_CRSF_TRANSMITTER; // MODULE ADDRESS: 0xEE
@@ -90,33 +90,33 @@ void CRSF_param_package(u8 dataType, u8 param) // ·¢ËÍCRSFÉèÖÃ²ÎÊı·â°üº¯Êı
 	param_buf[5] = dataType;
 	param_buf[6] = param;
 	crc_strat = &param_buf[2];
-	param_buf[7] = crc8(crc_strat, 5); // CRC8Ğ£Ñé
-	CRSF_send(param_buf, 8);		   // ·¢ËÍCRSF²ÎÊıÉèÖÃ°ü
+	param_buf[7] = crc8(crc_strat, 5); // CRC8æ ¡éªŒ
+	CRSF_send(param_buf, 8);		   // å‘é€CRSFå‚æ•°è®¾ç½®åŒ…
 }
 
-void CRSF_send(u8 *package, u8 len) // ·¢ËÍCRSFĞ­Òé°ü
+void CRSF_send(u8 *package, u8 len) // å‘é€CRSFåè®®åŒ…
 {
 	u8 i = 0;
 	sport_dir = 1;
 	crsf_tx = 1;
 	while (USART_GetFlagStatus(USART3, USART_FLAG_TC) != SET)
-		; // µÈ´ı·¢ËÍ½áÊø
+		; // ç­‰å¾…å‘é€ç»“æŸ
 	for (i = 0; i < len; i++)
 	{
-		USART_SendData(USART3, package[i]); // Ïò´®¿Ú3·¢ËÍÊı¾İ
+		USART_SendData(USART3, package[i]); // å‘ä¸²å£3å‘é€æ•°æ®
 		while (USART_GetFlagStatus(USART3, USART_FLAG_TC) != SET)
-			; // µÈ´ı·¢ËÍ½áÊø
+			; // ç­‰å¾…å‘é€ç»“æŸ
 	}
 	crsf_tx = 0;
 	sport_dir = 0;
 }
 
-void CRSF_unpackage() // CRSF½â°üº¯Êı
+void CRSF_unpackage() // CRSFè§£åŒ…å‡½æ•°
 {
 }
 
-u8 crsf_param_flag = 0; // crsf¸Ä±ä²ÎÊı±êÖ¾
-u8 crsf_param_buf = 0;	// ĞèÒª¸Ä±äµÄcrsf²ÎÊı»º´æ
+u8 crsf_param_flag = 0; // crsfæ”¹å˜å‚æ•°æ ‡å¿—
+u8 crsf_param_buf = 0;	// éœ€è¦æ”¹å˜çš„crsfå‚æ•°ç¼“å­˜
 
 u8 elrs_param = 0;
 u8 elrs_value = 0;
@@ -138,58 +138,58 @@ u8 elrs_value = 0;
 extern u8 elrs_rate;
 extern u8 elrs_pwr;
 
-void CRSF_out() // CRSFÖ÷½ø³Ì
+void CRSF_out() // CRSFä¸»è¿›ç¨‹
 {
-	if (crsf_param_flag) // ²ÎÊı¸Ä±ä±êÖ¾
+	if (crsf_param_flag) // å‚æ•°æ”¹å˜æ ‡å¿—
 	{
 		if (crsf_param_flag == 1)
-			CRSF_param_package(ELRS_PKT_RATE_COMMAND, crsf_param_buf); // ¸Ä±äÒ£¿ØËÙÂÊ
+			CRSF_param_package(ELRS_PKT_RATE_COMMAND, crsf_param_buf); // æ”¹å˜é¥æ§é€Ÿç‡
 		else if (crsf_param_flag == 2)
-			CRSF_param_package(ELRS_TLM_RATIO_COMMAND, crsf_param_buf); // ¸Ä±ä»Ø´«±ÈÀı
+			CRSF_param_package(ELRS_TLM_RATIO_COMMAND, crsf_param_buf); // æ”¹å˜å›ä¼ æ¯”ä¾‹
 		else if (crsf_param_flag == 3)
-			CRSF_param_package(ELRS_POWER_COMMAND, crsf_param_buf); // ¸Ä±ä¹¦ÂÊ
+			CRSF_param_package(ELRS_POWER_COMMAND, crsf_param_buf); // æ”¹å˜åŠŸç‡
 		else if (crsf_param_flag == 4)
-			CRSF_param_package(ELRS_MODEL_MATCH_COMMAND, crsf_param_buf); // Ä£Ê½Æ¥Åä
+			CRSF_param_package(ELRS_MODEL_MATCH_COMMAND, crsf_param_buf); // æ¨¡å¼åŒ¹é…
 		else if (crsf_param_flag == 5)
-			CRSF_param_package(ELRS_BIND_COMMAND, 1); // ½øÈëÎŞÏß¸üĞÂÄ£Ê½£¬±£Áô
+			CRSF_param_package(ELRS_BIND_COMMAND, 1); // è¿›å…¥æ— çº¿æ›´æ–°æ¨¡å¼ï¼Œä¿ç•™
 		else if (crsf_param_flag == 6)
-			CRSF_param_package(ELRS_BLE_JOYSTIC_COMMAND, 1); // ½øÈëÎŞÏß¸üĞÂÄ£Ê½£¬±£Áô
+			CRSF_param_package(ELRS_BLE_JOYSTIC_COMMAND, 1); // è¿›å…¥æ— çº¿æ›´æ–°æ¨¡å¼ï¼Œä¿ç•™
 		else if (crsf_param_flag == 7)
-			CRSF_param_package(ELRS_WIFI_COMMAND, 1); // ½øÈëÎŞÏß¸üĞÂÄ£Ê½£¬±£Áô
+			CRSF_param_package(ELRS_WIFI_COMMAND, 1); // è¿›å…¥æ— çº¿æ›´æ–°æ¨¡å¼ï¼Œä¿ç•™
 
 		crsf_param_flag = 0;
 	}
 	else
 	{
-		CRSF_Package();					   // CRSFĞ­Òé·â°ü
-		CRSF_send((u8 *)CRSF_package, 26); // Í¨¹ı´®¿Ú·¢ÉäCRSFĞ­Òé°ü
+		CRSF_Package();					   // CRSFåè®®å°åŒ…
+		CRSF_send((u8 *)CRSF_package, 26); // é€šè¿‡ä¸²å£å‘å°„CRSFåè®®åŒ…
 	}
 }
 
-volatile extern u8 CRSF_TLM_buf[30]; // ·¢ËÍ»º³å,×î´óUSART6_MAX_SEND_LEN×Ö½Ú
+volatile extern u8 CRSF_TLM_buf[30]; // å‘é€ç¼“å†²,æœ€å¤§USART6_MAX_SEND_LENå­—èŠ‚
 extern u8 CRSF_TLM_flag;
 
-int16 crsf_pitch = 0; // ¸©Ñö
-int16 crsf_roll = 0;  // ºá¹ö
-int16 crsf_yaw = 0;	  // Æ«º½
+int16 crsf_pitch = 0; // ä¿¯ä»°
+int16 crsf_roll = 0;  // æ¨ªæ»š
+int16 crsf_yaw = 0;	  // åèˆª
 
-u16 crsf_bat = 0;	   // µçÑ¹
-u16 crsf_cur = 0;	   // µçÁ÷
-u16 crsf_capacity = 0; // µç³ØÈİÁ¿
-u8 crsf_remaining = 0; // Ê£ÓàµçÁ¿
+u16 crsf_bat = 0;	   // ç”µå‹
+u16 crsf_cur = 0;	   // ç”µæµ
+u16 crsf_capacity = 0; // ç”µæ± å®¹é‡
+u8 crsf_remaining = 0; // å‰©ä½™ç”µé‡
 
-u8 crsf_flight_mode = 0; // ·ÉĞĞÄ£Ê½
+u8 crsf_flight_mode = 0; // é£è¡Œæ¨¡å¼
 
-int crsf_latitude = 0;		 // ¾­¶È
-int crsf_longitude = 0;		 // Î³¶È
-int16 crsf_ground_speed = 0; // µØËÙ
-int16 crsf_heading = 0;		 // ³¯Ïò
-int16 crsf_altitude = 0;	 // ÎÀĞÇº£°Î
-u8 crsf_satellites = 0;		 // ÎÀĞÇÊı
+int crsf_latitude = 0;		 // ç»åº¦
+int crsf_longitude = 0;		 // çº¬åº¦
+int16 crsf_ground_speed = 0; // åœ°é€Ÿ
+int16 crsf_heading = 0;		 // æœå‘
+int16 crsf_altitude = 0;	 // å«æ˜Ÿæµ·æ‹”
+u8 crsf_satellites = 0;		 // å«æ˜Ÿæ•°
 
-int16 crsf_vertical_speed = 0; // ´¹Ö±ËÙ¶È
+int16 crsf_vertical_speed = 0; // å‚ç›´é€Ÿåº¦
 
-int16 crsf_baro_altitude = 0; // ÆøÑ¹¼Æº£°Î
+int16 crsf_baro_altitude = 0; // æ°”å‹è®¡æµ·æ‹”
 
 u8 crsf_rx_rssi_perc = 0;
 u8 crsf_tx_rf_power = 0;
@@ -210,22 +210,22 @@ int crsf_offset = 0;
 
 void crsf_clear()
 {
-	crsf_pitch = 0;			 // ¸©Ñö
-	crsf_roll = 0;			 // ºá¹ö
-	crsf_yaw = 0;			 // Æ«º½
-	crsf_bat = 0;			 // µçÑ¹
-	crsf_cur = 0;			 // µçÁ÷
-	crsf_capacity = 0;		 // µç³ØÈİÁ¿
-	crsf_remaining = 0;		 // Ê£ÓàµçÁ¿
-	crsf_flight_mode = 0;	 // ·ÉĞĞÄ£Ê½
-	crsf_latitude = 0;		 // ¾­¶È
-	crsf_longitude = 0;		 // Î³¶È
-	crsf_ground_speed = 0;	 // µØËÙ
-	crsf_heading = 0;		 // ³¯Ïò
-	crsf_altitude = 0;		 // ÎÀĞÇº£°Î
-	crsf_satellites = 0;	 // ÎÀĞÇÊı
-	crsf_vertical_speed = 0; // ´¹Ö±ËÙ¶È
-	crsf_baro_altitude = 0;	 // ÆøÑ¹¼Æº£°Î
+	crsf_pitch = 0;			 // ä¿¯ä»°
+	crsf_roll = 0;			 // æ¨ªæ»š
+	crsf_yaw = 0;			 // åèˆª
+	crsf_bat = 0;			 // ç”µå‹
+	crsf_cur = 0;			 // ç”µæµ
+	crsf_capacity = 0;		 // ç”µæ± å®¹é‡
+	crsf_remaining = 0;		 // å‰©ä½™ç”µé‡
+	crsf_flight_mode = 0;	 // é£è¡Œæ¨¡å¼
+	crsf_latitude = 0;		 // ç»åº¦
+	crsf_longitude = 0;		 // çº¬åº¦
+	crsf_ground_speed = 0;	 // åœ°é€Ÿ
+	crsf_heading = 0;		 // æœå‘
+	crsf_altitude = 0;		 // å«æ˜Ÿæµ·æ‹”
+	crsf_satellites = 0;	 // å«æ˜Ÿæ•°
+	crsf_vertical_speed = 0; // å‚ç›´é€Ÿåº¦
+	crsf_baro_altitude = 0;	 // æ°”å‹è®¡æµ·æ‹”
 	crsf_rx_rssi_perc = 0;
 	crsf_tx_rf_power = 0;
 	crsf_tx_rssi_perc = 0;
@@ -241,38 +241,38 @@ void crsf_clear()
 	rx_signal = 0;
 }
 
-void CRSF_Tel_Out() // CRSF»Ø´«Êı¾İÊä³ö
+void CRSF_Tel_Out() // CRSFå›ä¼ æ•°æ®è¾“å‡º
 {
 	if (input_type == 1)
 	{
 		u8 i = 0;
 		u8 len = CRSF_TLM_buf[1] + 4;
 		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) != SET)
-			; // µÈ´ı·¢ËÍ½áÊø
+			; // ç­‰å¾…å‘é€ç»“æŸ
 		for (i = 0; i < len; i++)
 		{
-			USART_SendData(USART1, CRSF_TLM_buf[i]); // Ïò´®¿Ú1·¢ËÍÊı¾İ
+			USART_SendData(USART1, CRSF_TLM_buf[i]); // å‘ä¸²å£1å‘é€æ•°æ®
 			while (USART_GetFlagStatus(USART1, USART_FLAG_TC) != SET)
-				; // µÈ´ı·¢ËÍ½áÊø
+				; // ç­‰å¾…å‘é€ç»“æŸ
 		}
 	}
 }
 
 
-void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
+void crsf_depackage() // CRSFå›ä¼ æ•°æ®è§£ç 
 {
-	if (crc8(&CRSF_TLM_buf[2], CRSF_TLM_buf[1] - 1) == CRSF_TLM_buf[CRSF_TLM_buf[1] + 1]) // CRCĞ£Ñé
+	if (crc8(&CRSF_TLM_buf[2], CRSF_TLM_buf[1] - 1) == CRSF_TLM_buf[CRSF_TLM_buf[1] + 1]) // CRCæ ¡éªŒ
 	{
 		u8 id = CRSF_TLM_buf[2];
 		if (input_type)
-			CRSF_Tel_Out(); // Ò£²âÊı¾İ°üÖ±½ÓÍÆ»Ø½ÓÊÕ»ú
+			CRSF_Tel_Out(); // é¥æµ‹æ•°æ®åŒ…ç›´æ¥æ¨å›æ¥æ”¶æœº
 		switch (id)
 		{
-		case LINK_ID:					   // Á¬½ÓĞÅÏ¢
-			tx_signal = CRSF_TLM_buf[5];   // »ñÈ¡CRSF·¢ÉäĞÅºÅ
-			rx_signal = CRSF_TLM_buf[11];  // »ñÈ¡CRSF»Ø´«ĞÅºÅ
-			crsf_tx_lq = CRSF_TLM_buf[5];  // »ñÈ¡CRSF·¢ÉäĞÅºÅ
-			crsf_rx_lq = CRSF_TLM_buf[11]; // »ñÈ¡CRSF»Ø´«ĞÅºÅ
+		case LINK_ID:					   // è¿æ¥ä¿¡æ¯
+			tx_signal = CRSF_TLM_buf[5];   // è·å–CRSFå‘å°„ä¿¡å·
+			rx_signal = CRSF_TLM_buf[11];  // è·å–CRSFå›ä¼ ä¿¡å·
+			crsf_tx_lq = CRSF_TLM_buf[5];  // è·å–CRSFå‘å°„ä¿¡å·
+			crsf_rx_lq = CRSF_TLM_buf[11]; // è·å–CRSFå›ä¼ ä¿¡å·
 			crsf_tx_rssi = CRSF_TLM_buf[3];
 			crsf_rx_rssi = CRSF_TLM_buf[10];
 			if (CRSF_TLM_buf[9] == 1)
@@ -306,7 +306,7 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 				elrs_rate = 10;
 			tele_flag = 2;
 			break;
-		case ATTITUDE_ID: // ×ËÌ¬ĞÅÏ¢
+		case ATTITUDE_ID: // å§¿æ€ä¿¡æ¯
 			crsf_pitch = CRSF_TLM_buf[3] << 8 | CRSF_TLM_buf[4];
 			crsf_roll = CRSF_TLM_buf[5] << 8 | CRSF_TLM_buf[6];
 			crsf_yaw = CRSF_TLM_buf[7] << 8 | CRSF_TLM_buf[8];
@@ -316,7 +316,7 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 			//					attitude.roll=crsf_roll*3.1416f/32768;
 			//					attitude.yaw=crsf_yaw*3.1416f/32768;
 			break;
-		case BATTERY_ID: // µç³ØĞÅÏ¢
+		case BATTERY_ID: // ç”µæ± ä¿¡æ¯
 			crsf_bat = CRSF_TLM_buf[3] << 8 | CRSF_TLM_buf[4];
 			crsf_cur = CRSF_TLM_buf[5] << 8 | CRSF_TLM_buf[6];
 			crsf_capacity = CRSF_TLM_buf[7] << 16 | CRSF_TLM_buf[8] << 8 | CRSF_TLM_buf[9];
@@ -327,11 +327,11 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 			//					rx_sys_status.current_battery=crsf_cur;
 			//					rx_sys_status.battery_remaining=crsf_remaining;
 			break;
-		case FLIGHT_MODE_ID: // Ä£Ê½ĞÅÏ¢
+		case FLIGHT_MODE_ID: // æ¨¡å¼ä¿¡æ¯
 			crsf_flight_mode = CRSF_TLM_buf[3];
 			tele_flag = 2;
 			break;
-		case GPS_ID: // GPSĞÅÏ¢
+		case GPS_ID: // GPSä¿¡æ¯
 			crsf_latitude = CRSF_TLM_buf[3] << 24 | CRSF_TLM_buf[4] << 16 | CRSF_TLM_buf[5] << 8 | CRSF_TLM_buf[6];
 			crsf_longitude = CRSF_TLM_buf[7] << 24 | CRSF_TLM_buf[8] << 16 | CRSF_TLM_buf[9] << 8 | CRSF_TLM_buf[10];
 			crsf_ground_speed = CRSF_TLM_buf[11] << 8 | CRSF_TLM_buf[12];
@@ -347,13 +347,13 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 			//					rx_vfr_hud.groundspeed=crsf_ground_speed;
 			//					GPS_raw.alt=crsf_altitude;
 			break;
-		case CF_VARIO_ID: // ´¹Ö±ËÙ¶È
+		case CF_VARIO_ID: // å‚ç›´é€Ÿåº¦
 			crsf_vertical_speed = CRSF_TLM_buf[3] << 8 | CRSF_TLM_buf[4];
 			//////////////////////////////////////////////
 			tele_flag = 2;
 			//					rx_vfr_hud.climb=crsf_vertical_speed;
 			break;
-		case BARO_ALT_ID: // ÆøÑ¹¼Æ¸ß¶È
+		case BARO_ALT_ID: // æ°”å‹è®¡é«˜åº¦
 			crsf_baro_altitude = CRSF_TLM_buf[3] << 8 | CRSF_TLM_buf[4];
 			if (crsf_baro_altitude & 0x8000)
 			{
@@ -371,11 +371,11 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 			tele_flag = 2;
 			//					position.relative_alt=crsf_baro_altitude;
 			break;
-		case LINK_RX_ID: // ½ÓÊÕĞÅÏ¢
+		case LINK_RX_ID: // æ¥æ”¶ä¿¡æ¯
 			crsf_rx_rssi_perc = CRSF_TLM_buf[4];
 			crsf_tx_rf_power = CRSF_TLM_buf[7];
 			break;
-		case LINK_TX_ID: // ·¢ÉäĞÅÏ¢
+		case LINK_TX_ID: // å‘å°„ä¿¡æ¯
 			crsf_tx_rssi_perc = CRSF_TLM_buf[4];
 			crsf_rx_rf_power = CRSF_TLM_buf[7];
 			crsf_tx_fps = CRSF_TLM_buf[8];
@@ -392,8 +392,8 @@ void crsf_depackage() // CRSF»Ø´«Êı¾İ½âÂë
 
 #define USART3_REC_LEN 30
 u16 USART3_RX_STA = 0;
-u8 CRSF_start = 0;	  // ½ÓÊÜCRSF»Ø´«ĞÅÏ¢¿ªÊ¼±êÖ¾
-u8 CRSF_TLM_flag = 0; // ½ÓÊÕµ½TLMÏûÏ¢±êÖ¾
+u8 CRSF_start = 0;	  // æ¥å—CRSFå›ä¼ ä¿¡æ¯å¼€å§‹æ ‡å¿—
+u8 CRSF_TLM_flag = 0; // æ¥æ”¶åˆ°TLMæ¶ˆæ¯æ ‡å¿—
 
 volatile u8 CRSF_TLM_buf[USART3_REC_LEN];
 u8 crsf_len = 0;
@@ -405,31 +405,31 @@ volatile u8 CRSF_rate[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 volatile u8 CRSF_rate_temp[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
-void USART3_IRQHandler(void) // ´®¿Ú3ÖĞ¶Ï·şÎñ³ÌĞò
+void USART3_IRQHandler(void) // ä¸²å£3ä¸­æ–­æœåŠ¡ç¨‹åº
 {
 	u8 Res;
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) // ½ÓÊÕÖĞ¶Ï(½ÓÊÕµ½µÄÊı¾İ±ØĞëÊÇ0x0d 0x0a½áÎ²)
+	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) // æ¥æ”¶ä¸­æ–­(æ¥æ”¶åˆ°çš„æ•°æ®å¿…é¡»æ˜¯0x0d 0x0aç»“å°¾)
 	{
-		Res = USART_ReceiveData(USART3); //(USART1->DR);	//¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ
-		if (crsf_tx == 0)				 // Èç¹û¿ÕÏĞ
+		Res = USART_ReceiveData(USART3); //(USART1->DR);	//è¯»å–æ¥æ”¶åˆ°çš„æ•°æ®
+		if (crsf_tx == 0)				 // å¦‚æœç©ºé—²
 		{
-			if (CRSF_start == 3) // Êı¾İ½ÓÊÕ
+			if (CRSF_start == 3) // æ•°æ®æ¥æ”¶
 			{
 				CRSF_TLM_buf[USART3_RX_STA++] = Res;
-				if (USART3_RX_STA == (crsf_len + 2)) // ½ÓÊÕÍê³É
+				if (USART3_RX_STA == (crsf_len + 2)) // æ¥æ”¶å®Œæˆ
 				{
 					CRSF_start = 0;
 					CRSF_TLM_flag = 3;
 					crsf_depackage();
 				}
 			}
-			else if (CRSF_start == 2) // »ñÈ¡CRSF»Ø´«ID
+			else if (CRSF_start == 2) // è·å–CRSFå›ä¼ ID
 			{
 				u8 i = 0;
 				CRSF_TLM_buf[USART3_RX_STA++] = Res;
 				for (i = 0; i < 15; i++)
 				{
-					if (Res == crsf_id[i]) // ÕÒµ½ID
+					if (Res == crsf_id[i]) // æ‰¾åˆ°ID
 					{
 						CRSF_rate_temp[i]++;
 						CRSF_start = 3;
@@ -437,15 +437,15 @@ void USART3_IRQHandler(void) // ´®¿Ú3ÖĞ¶Ï·şÎñ³ÌĞò
 					}
 				}
 				if (i >= 15)
-					CRSF_start = 0; // Î´ÕÒµ½ID
+					CRSF_start = 0; // æœªæ‰¾åˆ°ID
 			}
-			else if (CRSF_start == 1) // ¼ÇÂ¼°ü³¤¶È
+			else if (CRSF_start == 1) // è®°å½•åŒ…é•¿åº¦
 			{
 				CRSF_TLM_buf[USART3_RX_STA++] = Res;
 				CRSF_start = 2;
 				crsf_len = Res;
 			}
-			if (Res == 0xEA) // ¿ªÊ¼½ÓÊÕ
+			if (Res == 0xEA) // å¼€å§‹æ¥æ”¶
 			{
 				USART3_RX_STA = 0;
 				CRSF_TLM_buf[USART3_RX_STA++] = Res;
